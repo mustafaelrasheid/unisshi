@@ -1,86 +1,21 @@
-use std::io::{stdin, Write, stdout};
+mod args;
+mod utils;
+mod template;
+
 use std::fs::{write, read_to_string};
 use std::env::var;
 use chrono::Local;
-use serde::Deserialize;
+use clap::Parser;
+use crate::args::{Cli, Commands};
+use crate::template::{Template, Check};
+use crate::utils::{input, input_y_or_n};
 
-fn input(prompt: &str) -> String {
-    let mut buffer = String::new();
-
-    println!("{}", prompt);
-    print!("> ");
-    stdout().flush();
-    stdin().read_line(&mut buffer);
-
-    return buffer.trim().to_string();
-}
-
-fn input_y_or_n(prompt: &str, default: bool) -> bool {
-    let formatted_prompt = format!("{} [y/n]", prompt);
-
-    loop {
-        match input(&formatted_prompt).as_str() {
-            "y" | "Y" => {
-                return true;
-            },
-            "N" | "n" => {
-                return false;
-            },
-            "D" | "d" => {
-                return default;
-            }
-            result => {
-                eprintln!("{} is incorrectly formatted. try again", result);
-            }
-        }
-    }
-}
-
-fn input_num(prompt: &str) -> i32 {
-    let formatted_prompt = format!("{} [number]", prompt);
-    loop {
-        match input(&formatted_prompt).parse(){
-            Ok(num) => {
-                return num;
-            },
-            Err(e) => {
-                eprintln!("Invalid number: {}", e);
-            }
-        }
-    }
-}
-
-#[derive(Deserialize)]
-struct Check {
-    prompt: String,
-    item: String,
-    expected: bool
-}
-
-#[derive(Deserialize)]
-struct Template {
-    checks: Vec<Check>
-}
-
-fn main() {
-    let diary_dir = format!("{}/diary", var("HOME").unwrap());
-    let current_date = Local::now()
-        .format("%Y-%m-%d")
-        .to_string();
-    let mut report = String::new();
-
-    
-    let template: Template = serde_json::from_value(
-        serde_json::from_str(
-            &read_to_string(
-                &format!("{}/template.json", diary_dir)
-            ).unwrap()
-        ).unwrap()
-    ).unwrap();
+fn handle_checks(checks: Option<&[Check]>, report: &mut String) {
+    let checks = if let Some(val) = checks { val } else { return; };
+    let mut all_checks_done = true;
     
     report.push_str("## Checks\n");
-    let mut all_checks_done = true;
-    for check in template.checks {
+    for check in checks {
         let answer = input_y_or_n(&check.prompt, check.expected);
 
         if answer != check.expected {
@@ -90,18 +25,57 @@ fn main() {
     }
     if all_checks_done {
         report.push_str("All Checks Covered.\n\n");
+    } else {
+        report.push_str("\n");
     }
-    
+}
+
+fn handle_sleep_and_login(report: &mut String) {
     let wakeup_time = input("When did you wake up today? ");
     let sleep_time  = input("When did you logoff diary today? ");
-    report.push_str("## Nums\n");
-    report.push_str(&format!(
-        "Wakeup time: {wakeup_time}.\nlogoff time: {sleep_time}.\n"));
     
-    let thoughts    = input("any toughts?");
-    report.push_str("## Thoughts\n");
-    report.push_str(&format!("{}\n", thoughts));
+    report.push_str("## Nums\n");
+    report.push_str(
+        &format!(
+            "Wakeup time: {wakeup_time}.\nlogoff time: {sleep_time}.\n\n"
+        )
+    );
+}
 
-    println!("{}",&report);
-    write(&format!("{}/{}", &diary_dir, &current_date), &report).unwrap();
+fn handle_thoughts (report: &mut String) {
+    let thoughts    = input("any toughts?");
+
+    report.push_str("## Thoughts\n");
+    report.push_str(&format!("{}\n\n", thoughts));
+}
+
+fn main() {
+    let cli = Cli::parse();
+
+    match cli.command {
+        Commands::Today => {
+            let diary_dir = format!(
+                "{}/diary",
+                var("HOME").expect("No HOME dir was set")
+            );
+            let current_date = Local::now()
+                .format("%Y-%m-%d")
+                .to_string();
+            let mut report = String::new();
+            let template: Template = serde_json::from_value(
+                serde_json::from_str(
+                    &read_to_string(
+                        &format!("{}/template.json", diary_dir)
+                    ).expect("No template file was found")
+                ).expect("Invalid Json")
+            ).expect("Missing fields or wrong types");
+
+            handle_checks(template.checks.as_deref(), &mut report);
+            handle_sleep_and_login(&mut report);
+            handle_thoughts(&mut report);
+
+            println!("{}",&report);
+            write(&format!("{}/{}", &diary_dir, &current_date), &report).unwrap();
+        }
+    }
 }
