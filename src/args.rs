@@ -15,5 +15,6 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    Today
+    Today,
+    AddThought
 }
