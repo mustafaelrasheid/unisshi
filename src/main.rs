@@ -93,7 +93,7 @@ fn main() {
             let thought = get_thought();
             
             report.push_str("\n");
-            report.push_str(&format!("{}\n\n", thought));
+            report.push_str(&thought);
             write(
                 &format!("{}/{}", &diary_dir, &current_date),
                 &report
