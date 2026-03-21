@@ -1,0 +1,19 @@
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(name = "tower")]
+#[command(version = "0.1.0")]
+#[command(author = "mustafaelrasheid")]
+#[command(
+    about = "Package manager for bricks",
+    long_about = None
+)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
+    Today
+}
