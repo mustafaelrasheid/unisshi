@@ -42,25 +42,33 @@ fn handle_sleep_and_login(report: &mut String) {
     );
 }
 
-fn handle_thoughts (report: &mut String) {
-    let thoughts    = input("any toughts?");
+fn get_thought() -> String {
+    let text = input("any thoughts?");
+    let timestamp = Local::now().format("%H:%M").to_string();
+    let result = format!("[{}]: {}\n", timestamp, text);
+    
+    return result;
+}
+
+fn handle_thought(report: &mut String) {
+    let thought = get_thought();
 
     report.push_str("## Thoughts\n");
-    report.push_str(&format!("{}\n\n", thoughts));
+    report.push_str(&thought);
 }
 
 fn main() {
     let cli = Cli::parse();
+    let diary_dir = format!(
+        "{}/diary",
+        var("HOME").expect("No HOME dir was set")
+    );
+    let current_date = Local::now()
+        .format("%Y-%m-%d")
+        .to_string();
 
     match cli.command {
         Commands::Today => {
-            let diary_dir = format!(
-                "{}/diary",
-                var("HOME").expect("No HOME dir was set")
-            );
-            let current_date = Local::now()
-                .format("%Y-%m-%d")
-                .to_string();
             let mut report = String::new();
             let template: Template = serde_json::from_value(
                 serde_json::from_str(
@@ -72,10 +80,24 @@ fn main() {
 
             handle_checks(template.checks.as_deref(), &mut report);
             handle_sleep_and_login(&mut report);
-            handle_thoughts(&mut report);
-
-            println!("{}",&report);
-            write(&format!("{}/{}", &diary_dir, &current_date), &report).unwrap();
+            handle_thought(&mut report);
+            write(
+                &format!("{}/{}", &diary_dir, &current_date),
+                &report
+            ).expect("Failed to write today's diary");
+        },
+        Commands::AddThought => {
+            let mut report = read_to_string(
+                &format!("{}/{}", &diary_dir, &current_date)
+            ).expect("Unable to find today's notes").trim().to_string();
+            let thought = get_thought();
+            
+            report.push_str("\n");
+            report.push_str(&format!("{}\n\n", thought));
+            write(
+                &format!("{}/{}", &diary_dir, &current_date),
+                &report
+            ).expect("Failed to write today's diary");
         }
     }
 }
