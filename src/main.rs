@@ -32,12 +32,11 @@ fn handle_checks(checks: Option<&[Check]>, report: &mut String) {
 
 fn handle_sleep_and_login(report: &mut String) {
     let wakeup_time = input("When did you wake up today? ");
-    let sleep_time  = input("When did you logoff diary today? ");
     
     report.push_str("## Nums\n");
     report.push_str(
         &format!(
-            "Wakeup time: {wakeup_time}.\nlogoff time: {sleep_time}.\n\n"
+            "Wakeup time: {wakeup_time}.\n\n"
         )
     );
 }
@@ -53,8 +52,19 @@ fn get_thought() -> String {
 fn handle_thought(report: &mut String) {
     let thought = get_thought();
 
-    report.push_str("## Thoughts\n");
-    report.push_str(&thought);
+    report.push_str(&format!("## Thoughts\n{}\n", thought));
+}
+
+fn get_template(diary_dir: &str) -> Template {
+    let template: Template = serde_json::from_value(
+        serde_json::from_str(
+            &read_to_string(
+                &format!("{}/template.json", diary_dir)
+            ).expect("No template file was found")
+        ).expect("Invalid Json")
+    ).expect("Missing fields or wrong types");
+    
+    return template;
 }
 
 fn main() {
@@ -70,14 +80,7 @@ fn main() {
     match cli.command {
         Commands::Today => {
             let mut report = String::new();
-            let template: Template = serde_json::from_value(
-                serde_json::from_str(
-                    &read_to_string(
-                        &format!("{}/template.json", diary_dir)
-                    ).expect("No template file was found")
-                ).expect("Invalid Json")
-            ).expect("Missing fields or wrong types");
-
+            let template = get_template(&diary_dir);
             handle_checks(template.checks.as_deref(), &mut report);
             handle_sleep_and_login(&mut report);
             handle_thought(&mut report);
@@ -97,6 +100,34 @@ fn main() {
             write(
                 &format!("{}/{}", &diary_dir, &current_date),
                 &report
+            ).expect("Failed to write today's diary");
+        },
+        Commands::Recheck => {
+            let template_checks = get_template(&diary_dir).checks.expect("Template has no checks");
+            let report = read_to_string(
+                &format!("{}/{}", &diary_dir, &current_date)
+            ).expect("Unable to find today's notes").trim().to_string();
+            if !report.starts_with("## Checks") {
+                println!("No checks section found in report");
+                return;
+            }
+            let (checks, rest) = report
+                .split_once("\n\n")
+                .expect("Invalid format: no seperator");
+            let checks = checks
+                .split("\n")
+                .filter_map(|check| {Some(check.to_string().strip_prefix("[ ] ")?.trim().to_string())})
+                .collect::<Vec<String>>();
+            let checks = template_checks.iter().filter(|check| checks.contains(&check.item))
+                .map(|val| val.clone())
+                .collect::<Vec<Check>>();
+            let mut buffer = String::new();
+
+            handle_checks(Some(checks.as_ref()), &mut buffer);
+            buffer.push_str(rest);
+            write(
+                &format!("{}/{}", &diary_dir, &current_date),
+                &buffer
             ).expect("Failed to write today's diary");
         }
     }

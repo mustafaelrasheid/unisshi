@@ -7,6 +7,7 @@ day, and would log internal thoughts in easy to map formats.
  - `unisshi today`: Asks you information about your day
  - `unisshi add-thought`: asks you your current thought and adds it to your day
     report
+ - `unisshi recheck`: asks you the checks you missed
 
 ## Configuration
  - to configure, run `mkdir ~/diary/` and create `~/diary/template.json` with
