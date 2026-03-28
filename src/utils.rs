@@ -22,7 +22,7 @@ pub fn input_y_or_n(prompt: &str, default: bool) -> bool {
             "N" | "n" => {
                 return false;
             },
-            "D" | "d" => {
+            "" | "D" | "d" => {
                 return default;
             }
             result => {
@@ -31,19 +31,3 @@ pub fn input_y_or_n(prompt: &str, default: bool) -> bool {
         }
     }
 }
-
-pub fn input_num(prompt: &str) -> i32 {
-    let formatted_prompt = format!("{} [number]", prompt);
-    loop {
-        match input(&formatted_prompt).parse(){
-            Ok(num) => {
-                return num;
-            },
-            Err(e) => {
-                eprintln!("Invalid number: {}", e);
-            }
-        }
-    }
-}
-
-
