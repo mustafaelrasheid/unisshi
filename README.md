@@ -4,7 +4,7 @@ especially if you need to check a few things off your mind before ending the
 day, and would log internal thoughts in easy-to-map formats.
 
 ## Usage
- - `unisshi today`: Asks you for information about your day.
+ - `unisshi today`: asks you for information about your day.
  - `unisshi add-thought`: asks you for your current thought and adds it to
     your day report.
  - `unisshi recheck`: asks you the checks you missed.
