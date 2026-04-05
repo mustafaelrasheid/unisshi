@@ -17,5 +17,5 @@ pub struct Cli {
 pub enum Commands {
     Today,
     AddThought,
-    Recheck
+    Recheck,
 }
