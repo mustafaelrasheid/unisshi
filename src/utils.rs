@@ -24,7 +24,7 @@ pub fn input_y_or_n(prompt: &str, default: bool) -> bool {
             },
             "" | "D" | "d" => {
                 return default;
-            }
+            },
             result => {
                 eprintln!("{} is incorrectly formatted. try again", result);
             }
