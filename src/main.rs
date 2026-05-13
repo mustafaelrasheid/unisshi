@@ -117,7 +117,7 @@ fn main() {
             handle_thought(&mut report);
             write_report(&report, &diary_dir, &current_date);
         },
-        Commands::AddThought => {
+        Commands::Thought => {
             let mut report = get_report(&diary_dir, &current_date);
             let thought = get_thought();
             
