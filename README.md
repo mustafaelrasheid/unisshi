@@ -1,7 +1,7 @@
 # Unisshi
-Unisshi is a minimal CLI app in Rust designed to help you write your diaries.
-especially if you need to check a few things off your mind before ending the
-day, and would log internal thoughts in easy-to-map formats.
+A personal diary and logging cli app.
+Specially if you need to check a few things off of your mind before ending
+the day, and log internal thoughts in easy-to-map formats.
 
 ## Usage
  - `unisshi today`: asks you for information about your day.
