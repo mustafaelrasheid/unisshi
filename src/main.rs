@@ -23,7 +23,7 @@ fn handle_checks(checks: Option<&[Check]>, report: &mut String) {
         }
     }
     if all_checks_done {
-        report.push_str("All Checks Covered.\n\n");
+        report.push_str("All checks covered.\n\n");
     } else {
         report.push_str("\n");
     }
@@ -160,7 +160,7 @@ fn main() {
                     .find(|entry| entry.item == check)
                     .unwrap_or_else(||{
                         eprintln!(
-                            "Couldn't match report checksto template checks");
+                            "Couldn't match report checks to template checks");
                         exit(1);
                     }).clone()
                 )
