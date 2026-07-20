@@ -166,9 +166,13 @@ fn main() {
                 )
                 .collect::<Vec<Check>>();
 
-            handle_checks(Some(checks.as_ref()), &mut buffer);
-            buffer.push_str(rest);
-            write_report(&buffer, &diary_dir, &current_date);
+			if checks.is_empty() {
+				println!("All checks covered.");
+			} else {
+				handle_checks(Some(checks.as_ref()), &mut buffer);
+				buffer.push_str(rest);
+				write_report(&buffer, &diary_dir, &current_date);
+			}
         }
     }
 }
