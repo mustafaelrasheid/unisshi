@@ -158,7 +158,7 @@ fn main() {
                 .map(|check| template_checks
                     .iter()
                     .find(|entry| entry.item == check)
-                    .unwrap_or_else(||{
+                    .unwrap_or_else(|| {
                         eprintln!(
                             "Couldn't match report checks to template checks");
                         exit(1);
