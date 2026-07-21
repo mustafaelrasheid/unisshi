@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 #[command(version = "1.1.0")]
 #[command(author = "mustafaelrasheid")]
 #[command(
-    about = "diary and logging cli app",
+    about = "A personal diary and logging cli app.",
     long_about = None
 )]
 pub struct Cli {
