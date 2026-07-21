@@ -5,17 +5,17 @@ use clap::{Parser, Subcommand};
 #[command(version = "1.1.0")]
 #[command(author = "mustafaelrasheid")]
 #[command(
-    about = "A personal diary and logging cli app.",
-    long_about = None
+	about = "A personal diary and logging cli app.",
+	long_about = None
 )]
 pub struct Cli {
-    #[command(subcommand)]
-    pub command: Commands,
+	#[command(subcommand)]
+	pub command: Commands,
 }
 
 #[derive(Subcommand)]
 pub enum Commands {
-    Today,
-    Thought,
-    Recheck,
+	Today,
+	Thought,
+	Recheck,
 }
