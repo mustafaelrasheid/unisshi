@@ -40,7 +40,7 @@ fn handle_queries(queries: Option<&[Query]>, report: &mut String) {
 				query.item,
 				input(&query.prompt)
 			)
-		)
+		);
 	}
 	report.push_str("\n");
 }
@@ -132,7 +132,7 @@ fn main() {
 			});
 			let template_checks = template.checks.unwrap_or_else(|| {
 				eprintln!("Template has no checks field");
-				exit(1)
+				exit(1);
 			});
 			let report = get_report(&diary_dir, &current_date);
 			if !report.starts_with("## Checks") {
@@ -149,20 +149,22 @@ fn main() {
 				.filter_map(|check|
 					Some(
 						check
-						.to_string()
-						.strip_prefix("[ ] ")?
-						.trim()
-						.to_string()
+							.to_string()
+							.strip_prefix("[ ] ")?
+							.trim()
+							.to_string()
 					)
 				)
-				.map(|check| template_checks
-					.iter()
-					.find(|entry| entry.item == check)
-					.unwrap_or_else(|| {
-						eprintln!(
-							"Couldn't match report checks to template checks");
-						exit(1);
-					}).clone()
+				.map(|check|
+					template_checks
+						.iter()
+						.find(|entry| entry.item == check)
+						.unwrap_or_else(|| {
+							eprintln!(
+								"Couldn't match report checks to template checks");
+							exit(1);
+						})
+						.clone()
 				)
 				.collect::<Vec<Check>>();
 
