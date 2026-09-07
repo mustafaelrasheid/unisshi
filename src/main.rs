@@ -46,7 +46,7 @@ fn handle_queries(queries: Option<&[Query]>, report: &mut String) {
 }
 
 fn get_thought() -> String {
-	let text = input("any thoughts?");
+	let text = input("Any thoughts?");
 	let timestamp = Local::now()
 		.format("%H:%M")
 		.to_string();
