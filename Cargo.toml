@@ -1,7 +1,13 @@
 [package]
 name = "unisshi"
+description = "A personal diary and logging cli app."
 version = "1.1.2"
 edition = "2024"
+homepage = "https://github.com/mustafaelrasheid/unisshi"
+repository = "https://github.com/mustafaelrasheid/unisshi"
+license = "MIT"
+keywords = ["cli", "diary"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 chrono = "0.4.44"
