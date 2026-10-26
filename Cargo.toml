@@ -6,7 +6,7 @@ edition = "2024"
 homepage = "https://github.com/mustafaelrasheid/unisshi"
 repository = "https://github.com/mustafaelrasheid/unisshi"
 license = "MIT"
-keywords = ["cli", "diary"]
+keywords = ["diary", "journal", "checklist", "markdown"]
 categories = ["command-line-utilities"]
 
 [dependencies]
