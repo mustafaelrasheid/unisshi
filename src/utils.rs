@@ -29,18 +29,25 @@ pub fn input_y_or_n(prompt: &str, default: bool) -> Result<bool, Box<dyn Error>>
 	};
 	
 	loop {
-		match input(&formatted_prompt)?.as_str() {
-			"y" | "Y" => {
-				return Ok(true);
+		match input(&formatted_prompt) {
+			Ok(text) => {
+				match text.as_str() {
+					"y" | "Y" => {
+						return Ok(true);
+					},
+					"N" | "n" => {
+						return Ok(false);
+					},
+					"" | "D" | "d" => {
+						return Ok(default);
+					},
+					result => {
+						eprintln!("{} is incorrectly formatted", result);
+					}
+				}
 			},
-			"N" | "n" => {
-				return Ok(false);
-			},
-			"" | "D" | "d" => {
-				return Ok(default);
-			},
-			result => {
-				return Err(format!("{} is incorrectly formatted", result).into());
+			Err(error) => {
+				return Err(error);
 			}
 		}
 	}
