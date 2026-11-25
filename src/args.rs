@@ -15,7 +15,10 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-	Today,
+	Today {
+		#[arg(long)]
+		overwrite: bool
+	},
 	Thought,
 	Recheck,
 }

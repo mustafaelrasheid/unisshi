@@ -128,9 +128,13 @@ fn main() {
 
 	create_dir_all(&diary_dir).expect("Failed to initalize diary dir");
 	match cli.command {
-		Commands::Today => {
+		Commands::Today { overwrite } => {
 			let mut report = String::new();
-			
+
+			if !get_report(&diary_dir, &current_date).ok().is_none() && !overwrite {
+				eprintln!("A report already exists. --overwrite bypasses this.");
+				return;
+			}
 			if let Some(template) = get_template(&diary_dir) {
 				handle_checks(template.checks.as_deref(), &mut report);
 				handle_queries(template.queries.as_deref(), &mut report);
