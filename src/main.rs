@@ -46,7 +46,8 @@ fn handle_checks(checks: Option<&[Check]>, report: &mut String) {
 
 	report.push_str("## Checks\n");
 	for check in checks {
-		if input_y_or_n(&check.prompt, check.expected) != check.expected {
+		if input_y_or_n(&check.prompt, check.expected)
+			.expect_or_exit("Failed to get input") != check.expected {
 			report.push_str(&format!("[ ] {}\n", check.item));
 			all_checks_done = false;
 		}
@@ -68,6 +69,7 @@ fn handle_queries(queries: Option<&[Query]>, report: &mut String) {
 				"{}: {}\n",
 				query.item,
 				input(&query.prompt)
+					.expect_or_exit("Failed to get input")
 			)
 		);
 	}
@@ -75,7 +77,8 @@ fn handle_queries(queries: Option<&[Query]>, report: &mut String) {
 }
 
 fn get_thought() -> String {
-	let text = input("Any thoughts?");
+	let text = input("Any thoughts?")
+		.expect_or_exit("Failed to get input");
 	let timestamp = Local::now()
 		.format("%H:%M")
 		.to_string();
